@@ -7,6 +7,9 @@ import lombok.Data;
 @AllArgsConstructor
 public class RegisterReqDto {
 
+    private String firstName;
+    private String lastName;
     private String email;
     private String password;
+
 }

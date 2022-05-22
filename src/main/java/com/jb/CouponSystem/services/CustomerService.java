@@ -4,6 +4,7 @@ package com.jb.CouponSystem.services;
 import com.jb.CouponSystem.Beans.Category;
 import com.jb.CouponSystem.Beans.Coupon;
 import com.jb.CouponSystem.Beans.Customer;
+import com.jb.CouponSystem.dto.RegisterReqDto;
 import com.jb.CouponSystem.exceptions.CouponSystemException;
 
 import java.util.List;
@@ -25,7 +26,7 @@ public interface CustomerService {
 
     List<Coupon> getAllAvailableCoupons(int customerID);
 
-    void register(Customer customer) throws CouponSystemException;
+    void register(RegisterReqDto registerReqDto) throws CouponSystemException;
 
 
 }

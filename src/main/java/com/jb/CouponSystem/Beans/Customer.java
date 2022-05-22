@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.lang.Nullable;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -29,5 +30,6 @@ public class Customer {
     private String email;
 
     @ManyToMany
+    @Nullable
     private List<Coupon> coupons = new ArrayList<>();
 }

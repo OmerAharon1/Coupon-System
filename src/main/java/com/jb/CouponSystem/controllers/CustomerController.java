@@ -6,6 +6,7 @@ import com.jb.CouponSystem.Beans.Customer;
 import com.jb.CouponSystem.LoginManager.ClientType;
 import com.jb.CouponSystem.dto.LoginReqDto;
 import com.jb.CouponSystem.dto.LoginResDto;
+import com.jb.CouponSystem.dto.RegisterReqDto;
 import com.jb.CouponSystem.exceptions.CouponSystemException;
 import com.jb.CouponSystem.security.TokenManager;
 import com.jb.CouponSystem.services.CustomerService;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
+//for authorization add , @RequestHeader("Authorization") UUID token
 
 @RestController
 @RequestMapping("customer")
@@ -35,8 +37,8 @@ public class CustomerController {
 
     @PostMapping("register")
     @ResponseStatus(HttpStatus.CREATED)
-    public void register(@RequestBody Customer customer) throws CouponSystemException {
-        customerService.register(customer);
+    public void register(@RequestBody RegisterReqDto registerReqDto) throws CouponSystemException {
+        customerService.register(registerReqDto);
     }
 
     @PutMapping("/{customerId}")

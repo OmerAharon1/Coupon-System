@@ -196,6 +196,14 @@ public class Tests implements CommandLineRunner {
         System.out.println("Delete Customer::\n" + adminService.getAllCustomers());
         System.out.println("Get one customer(2)::\n" + adminService.getOneCustomer(2));
 
+        Customer customer5 = Customer.builder()
+                .firstName("omer")
+                .lastName("aharon")
+                .email("omer@omeraharon.com")
+                .password("123456")
+                .build();
 
+
+//        customerService.register(customer5);
     }
 }

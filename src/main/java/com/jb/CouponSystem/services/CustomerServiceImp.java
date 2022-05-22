@@ -4,9 +4,11 @@ import com.jb.CouponSystem.Beans.Category;
 import com.jb.CouponSystem.Beans.Coupon;
 import com.jb.CouponSystem.Beans.Customer;
 import com.jb.CouponSystem.LoginManager.ClientType;
+import com.jb.CouponSystem.dto.RegisterReqDto;
 import com.jb.CouponSystem.exceptions.CouponSystemException;
 import com.jb.CouponSystem.exceptions.ErrMsg;
 import com.jb.CouponSystem.exceptions.ExceptionUtil;
+import com.jb.CouponSystem.mapper.CustomerMapper;
 import com.jb.CouponSystem.security.Information;
 import com.jb.CouponSystem.security.TokenManager;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +24,8 @@ import java.util.UUID;
 public class CustomerServiceImp extends ClientService implements CustomerService {
     @Autowired
     private TokenManager tokenManager;
+    @Autowired
+    private CustomerMapper customerMapper;
 
     @Override
     public UUID login(String email, String password) throws CouponSystemException {
@@ -32,6 +36,14 @@ public class CustomerServiceImp extends ClientService implements CustomerService
         Information information = new Information(customer.getId(), email, ClientType.CUSTOMER);
         return tokenManager.addToken(information);
 
+    }
+
+    @Override
+    public void register(RegisterReqDto registerReqDto) throws CouponSystemException {
+        if (customerRepository.existsByEmailAndPassword(registerReqDto.getEmail(), registerReqDto.getPassword())) {
+            throw new CouponSystemException(ErrMsg.ALREADY_EXISTS);
+        }
+        customerRepository.save(customerMapper.toCustomer(registerReqDto));
     }
 
     @Override
@@ -81,14 +93,6 @@ public class CustomerServiceImp extends ClientService implements CustomerService
     public List<Coupon> getAllAvailableCoupons(int customerID) {
         return couponRepository.getAllAvailableCoupons(customerID);
 
-    }
-
-    @Override
-    public void register(Customer customer) throws CouponSystemException {
-        if (customerRepository.existsByEmailAndPassword(customer.getEmail(), customer.getPassword())) {
-            throw new CouponSystemException(ErrMsg.ALREADY_EXISTS);
-        }
-        customerRepository.save(customer);
     }
 
 
