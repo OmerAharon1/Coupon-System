@@ -3,14 +3,12 @@ package com.jb.CouponSystem.controllers;
 import com.jb.CouponSystem.Beans.Category;
 import com.jb.CouponSystem.Beans.Company;
 import com.jb.CouponSystem.Beans.Coupon;
-import com.jb.CouponSystem.LoginManager.ClientType;
-import com.jb.CouponSystem.dto.LoginReqDto;
-import com.jb.CouponSystem.dto.LoginResDto;
+import com.jb.CouponSystem.dto.CouponDto;
 import com.jb.CouponSystem.exceptions.CouponSystemException;
+import com.jb.CouponSystem.mapper.CompanyMapper;
 import com.jb.CouponSystem.security.TokenManager;
 import com.jb.CouponSystem.services.CompanyService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,30 +23,23 @@ public class CompanyController {
 
     @Autowired
     private TokenManager tokenManager;
+    @Autowired
+    private CompanyMapper companyMapper;
 
 
-    @PostMapping("login")
-    @ResponseStatus(HttpStatus.CREATED)
-    public LoginResDto login(@RequestBody LoginReqDto loginReqDto) throws CouponSystemException {
-        UUID uuid = companyService.login(loginReqDto.getEmail(), loginReqDto.getPassword());
-        ClientType clientType = tokenManager.getClientType(uuid);
-        return new LoginResDto(loginReqDto.getEmail(), uuid, clientType);
-
+    @PostMapping("addCoupon/{companyID}")
+    CouponDto addCoupon(@RequestHeader("Authorization") UUID uuid, @PathVariable int companyID, @RequestBody CouponDto couponDto) throws CouponSystemException {
+        return companyService.addCoupon(companyID, couponDto, uuid);
     }
 
-    @PostMapping("/{Id}")
-    void addCoupon(@PathVariable int companyID, @RequestBody Coupon coupon) throws CouponSystemException {
-        companyService.addCoupon(companyID, coupon);
+    @PutMapping("updateCoupon/{couponId}")
+    CouponDto updateCoupon(@RequestHeader("Authorization") UUID uuid, @PathVariable int couponId, @RequestBody CouponDto couponDto) throws CouponSystemException {
+        return companyService.updateCoupon(couponId, couponDto, uuid);
     }
 
-    @PutMapping("/{Id}")
-    void updateCoupon(@PathVariable int companyID, @RequestBody Coupon coupon) {
-        companyService.updateCoupon(companyID, coupon);
-    }
-
-    @DeleteMapping("/{Id}")
-    void deleteCoupon(int CouponID) throws CouponSystemException {
-        companyService.deleteCoupon(CouponID);
+    @DeleteMapping("delete/{id}")
+    void deleteCoupon(@PathVariable int id) throws CouponSystemException {
+        companyService.deleteCoupon(id);
     }
 
     @GetMapping("coupons/{Id}")

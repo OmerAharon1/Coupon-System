@@ -1,10 +1,12 @@
 package com.jb.CouponSystem.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.*;
 
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class RegisterReqDto {
 
     private String firstName;

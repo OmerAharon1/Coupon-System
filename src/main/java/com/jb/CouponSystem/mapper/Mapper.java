@@ -4,12 +4,12 @@ import java.util.List;
 
 public interface Mapper<DAO, DTO> {
 
-    DAO toCustomer(DTO dto);
+    DAO toBean(DTO dto);
 
-    DTO toRegisterDto(DAO dao);
+    DTO toDto(DAO dao);
 
-    List<DAO> toCustomerList(List<DTO> dtos);
+    List<DAO> toBeanList(List<DTO> dtos);
 
-    List<DTO> toRegisterDtoList(List<DAO> daos);
+    List<DTO> toDtoList(List<DAO> daos);
 }
 

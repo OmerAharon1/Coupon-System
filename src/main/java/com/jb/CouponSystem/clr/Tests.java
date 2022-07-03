@@ -7,22 +7,23 @@ import com.jb.CouponSystem.Beans.Customer;
 import com.jb.CouponSystem.LoginManager.ClientType;
 import com.jb.CouponSystem.LoginManager.LoginManager;
 import com.jb.CouponSystem.art.Asci;
+import com.jb.CouponSystem.mapper.CouponMapper;
+import com.jb.CouponSystem.mapper.CustomerMapper;
 import com.jb.CouponSystem.repos.CompanyRepository;
 import com.jb.CouponSystem.repos.CouponRepository;
 import com.jb.CouponSystem.repos.CustomerRepository;
-import com.jb.CouponSystem.services.AdminService;
-import com.jb.CouponSystem.services.CompanyService;
-import com.jb.CouponSystem.services.CustomerService;
-import com.jb.CouponSystem.services.CustomerServiceImp;
+import com.jb.CouponSystem.security.TokenManager;
+import com.jb.CouponSystem.services.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
-import java.sql.Date;
-import java.time.LocalDate;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 
 import static com.jb.CouponSystem.Beans.Category.FOOD;
+import static com.jb.CouponSystem.Beans.Category.GAMING;
 
 @Component
 public class Tests implements CommandLineRunner {
@@ -36,6 +37,14 @@ public class Tests implements CommandLineRunner {
     private CustomerServiceImp customerServiceImp;
     @Autowired
     private LoginManager loginManager;
+    @Autowired
+    private CustomerMapper customerMapper;
+    @Autowired
+    private CouponMapper couponMapper;
+    @Autowired
+    private UserService userService;
+    @Autowired
+    private TokenManager tokenManager;
 
 
     @Override
@@ -91,8 +100,8 @@ public class Tests implements CommandLineRunner {
         Coupon coupon = Coupon.builder()
                 .amount(100)
                 .price(20)
-                .startDate(Date.valueOf(LocalDate.now()))
-                .endDate(Date.valueOf(LocalDate.now().plusDays(7)))
+                .startDate(Timestamp.valueOf(LocalDateTime.now()))
+                .endDate(Timestamp.valueOf(LocalDateTime.now().plusDays(7)))
                 .title("free coke")
                 .description("just get a free coke")
                 .category(FOOD)
@@ -103,8 +112,8 @@ public class Tests implements CommandLineRunner {
         Coupon coupon2 = Coupon.builder()
                 .amount(100)
                 .price(25)
-                .startDate(Date.valueOf(LocalDate.now()))
-                .endDate(Date.valueOf(LocalDate.now().plusDays(7)))
+                .startDate(Timestamp.valueOf(LocalDateTime.now()))
+                .endDate(Timestamp.valueOf(LocalDateTime.now().plusDays(7)))
                 .title("discount coke")
                 .description("discount coke")
                 .category(Category.GAMING)
@@ -115,8 +124,8 @@ public class Tests implements CommandLineRunner {
         Coupon coupon3 = Coupon.builder()
                 .amount(100)
                 .price(20)
-                .startDate(Date.valueOf(LocalDate.now()))
-                .endDate(Date.valueOf(LocalDate.now().minusDays(2)))
+                .startDate(Timestamp.valueOf(LocalDateTime.now()))
+                .endDate(Timestamp.valueOf(LocalDateTime.now().plusDays(7)))
                 .title("im expired")
                 .description("just delete me already")
                 .category(FOOD)
@@ -127,8 +136,8 @@ public class Tests implements CommandLineRunner {
         Coupon coupon4 = Coupon.builder()
                 .amount(95)
                 .price(31)
-                .startDate(Date.valueOf(LocalDate.now()))
-                .endDate(Date.valueOf(LocalDate.now().plusDays(10)))
+                .startDate(Timestamp.valueOf(LocalDateTime.now()))
+                .endDate(Timestamp.valueOf(LocalDateTime.now().plusDays(7)))
                 .title("comp Test")
                 .description("let coca cola own me")
                 .category(FOOD)
@@ -136,23 +145,47 @@ public class Tests implements CommandLineRunner {
                 .company(companyRepository.getById(2))
                 .build();
 
+        Coupon coupon5 = Coupon.builder()
+                .amount(900)
+                .price(39)
+                .startDate(Timestamp.valueOf(LocalDateTime.now()))
+                .endDate(Timestamp.valueOf(LocalDateTime.now().plusDays(7)))
+                .title("yam yam")
+                .description("if you love pepsi")
+                .category(FOOD)
+                .image("nothing")
+                .company(companyRepository.getById(1))
+                .build();
+
+        Coupon coupon6 = Coupon.builder()
+                .amount(1)
+                .price(11)
+                .startDate(Timestamp.valueOf(LocalDateTime.now()))
+                .endDate(Timestamp.valueOf(LocalDateTime.now().plusDays(7)))
+                .title("gta v")
+                .description("we just special")
+                .category(GAMING)
+                .image("nothing")
+                .company(companyRepository.getById(1))
+                .build();
+
         customerRepository.saveAll(Arrays.asList(customer, customer2));
         companyRepository.saveAll(Arrays.asList(company, company2));
-        couponRepository.saveAll(Arrays.asList(coupon, coupon2, coupon3));
+        couponRepository.saveAll(Arrays.asList(coupon, coupon2, coupon3, coupon5, coupon6));
         customerRepository.save(customer4);
 
         //Company Test
         System.out.println(Asci.companyTest);
         CompanyService companyService = (CompanyService) loginManager.login("CocaCola@gmail.com", "123456", ClientType.COMPANY);
         System.out.println("Get all company coupons::\n" + companyService.getCompanyCoupons(2));
-        companyService.addCoupon(2, coupon4);
+//        companyService.addCoupon(1, coupon4);
         System.out.println("Add Coupon::\n" + companyService.getCompanyCoupons(2));
         coupon4.setTitle("im a bit diffrent now");
-        companyService.updateCoupon(2, coupon4);
+//        companyService.updateCoupon(1, couponMapper.toDto(coupon4));
         System.out.println("Update Coupon::\n" + companyService.getCompanyCoupons(2));
-        companyService.deleteCoupon(4);
+//        companyService.deleteCoupon(4);
         System.out.println("Delete Coupon::\n" + companyService.getCompanyCoupons(2));
-        companyService.addCoupon(2, coupon4);
+//        companyService.addCoupon(2, coupon4);
         System.out.println("Get all coupons by category::\n" + companyService.getCompanyCoupons(1, FOOD));
         System.out.println("Get all coupons by max price::\n" + companyService.getCompanyCoupons(2, 25));
         System.out.println("Get one company::\n" + companyService.getCompanyDetails(2));
@@ -163,14 +196,14 @@ public class Tests implements CommandLineRunner {
 //        System.out.println(customerServiceImp.login("ela@shenkin.com", "123456"));
         System.out.println(Asci.customerTest);
         CustomerService customerService = (CustomerService) loginManager.login("ela@shenkin.com", "123456", ClientType.CUSTOMER);
-        customerService.purchaseCoupon(2, coupon);
+//        customerService.purchaseCoupon(2, coupon);
         System.out.println("Get all coupons::\n" + customerService.getCustomerCoupons(2));
-        customerService.purchaseCoupon(2, coupon2);
+//        customerService.purchaseCoupon(2, coupon2);
         System.out.println("Purchase coupon::\n" + customerService.getCustomerCoupons(2));
-        customerService.purchaseCoupon(1, coupon);
+//        customerService.purchaseCoupon(1, coupon);
         System.out.println("Get all coupons by max price::\n" + customerService.getCustomerCoupons(2, 20));
         System.out.println("Get all coupons by category::\n" + customerService.getCustomerCoupons(2, FOOD));
-        System.out.println("Get one customer::\n" + customerService.getCustomerDetails(2));
+//        System.out.println("Get one customer::\n" + customerService.getCustomerDetails(2));
         System.out.println("Get all available coupons::\n" + customerService.getAllAvailableCoupons(2));
 //        customerService.register(customer4);
 
@@ -181,7 +214,7 @@ public class Tests implements CommandLineRunner {
         adminService.addCompany(company3);
         System.out.println("New company::\n" + adminService.getAllCompanies());
         company3.setPassword("123123");
-        adminService.updateCompany(company3);
+//        adminService.updateCompany(company3);
         System.out.println("Update company::\n" + adminService.getAllCompanies());
         adminService.deleteCompany(3);
         System.out.println("Delete company::\n" + adminService.getAllCompanies());
@@ -190,11 +223,11 @@ public class Tests implements CommandLineRunner {
         adminService.addCustomer(customer3);
         System.out.println("Add Customer::\n" + adminService.getAllCustomers());
         customer3.setLastName("mangistu");
-        adminService.updateCustomer(customer3);
+//        adminService.updateCustomer(customer3);
         System.out.println("Update Customer::\n" + adminService.getAllCustomers());
         adminService.deleteCustomer(3);
         System.out.println("Delete Customer::\n" + adminService.getAllCustomers());
-        System.out.println("Get one customer(2)::\n" + adminService.getOneCustomer(2));
+//        System.out.println("Get one customer(2)::\n" + adminService.getOneCustomer(2));
 
         Customer customer5 = Customer.builder()
                 .firstName("omer")
@@ -202,8 +235,8 @@ public class Tests implements CommandLineRunner {
                 .email("omer@omeraharon.com")
                 .password("123456")
                 .build();
+        System.out.println(customerService.getAllCoupons());
 
-
-//        customerService.register(customer5);
+//        customerService.register(customerMapper.toRegisterDto(customer5));
     }
 }

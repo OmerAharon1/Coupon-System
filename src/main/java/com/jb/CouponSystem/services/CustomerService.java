@@ -4,6 +4,7 @@ package com.jb.CouponSystem.services;
 import com.jb.CouponSystem.Beans.Category;
 import com.jb.CouponSystem.Beans.Coupon;
 import com.jb.CouponSystem.Beans.Customer;
+import com.jb.CouponSystem.dto.CouponDto;
 import com.jb.CouponSystem.dto.RegisterReqDto;
 import com.jb.CouponSystem.exceptions.CouponSystemException;
 
@@ -12,9 +13,9 @@ import java.util.UUID;
 
 public interface CustomerService {
 
-    UUID login(String email, String password) throws CouponSystemException;
+    CouponDto purchaseCoupon(int customerId, CouponDto couponDto, UUID uuid) throws CouponSystemException;
 
-    void purchaseCoupon(int customerId, Coupon coupon) throws CouponSystemException;
+    void register(RegisterReqDto registerReqDto) throws CouponSystemException;
 
     List<Coupon> getCustomerCoupons(int customerId);
 
@@ -22,11 +23,13 @@ public interface CustomerService {
 
     List<Coupon> getCustomerCoupons(int customerId, double maxPrice);
 
-    Customer getCustomerDetails(int customerId) throws CouponSystemException;
+    Customer getCustomerDetails(int customerId, UUID uuid) throws CouponSystemException;
 
     List<Coupon> getAllAvailableCoupons(int customerID);
 
-    void register(RegisterReqDto registerReqDto) throws CouponSystemException;
+    List<Coupon> getAllCoupons();
+
+    Coupon getOneCoupon(int id) throws CouponSystemException;
 
 
 }

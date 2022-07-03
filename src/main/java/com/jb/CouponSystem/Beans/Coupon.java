@@ -1,10 +1,14 @@
 package com.jb.CouponSystem.Beans;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.sql.Date;
+import java.sql.Timestamp;
 
 @Entity
 @Table(name = "Coupons")
@@ -19,8 +23,10 @@ public class Coupon {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @ToString.Exclude
-    @ManyToOne
+    //    @ToString.Exclude
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+    @JoinColumn(name = "company_id", nullable = false)
     private Company company;
 
     @Enumerated(EnumType.STRING)
@@ -28,8 +34,8 @@ public class Coupon {
     @Column(unique = true, length = 30)
     private String title;
     private String description;
-    private Date startDate;
-    private Date endDate;
+    private Timestamp startDate;
+    private Timestamp endDate;
     private int amount;
     private double price;
     private String image;

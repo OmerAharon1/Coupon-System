@@ -10,6 +10,7 @@ import java.util.UUID;
 @AllArgsConstructor
 public class LoginResDto {
 
+    private int id;
     private String email;
     private UUID token;
     private ClientType clientType;

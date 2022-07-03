@@ -15,7 +15,7 @@ public class CustomerMapper implements Mapper<Customer, RegisterReqDto> {
     private DateMapper dateMapper;
 
     @Override
-    public Customer toCustomer(RegisterReqDto registerReqDto) {
+    public Customer toBean(RegisterReqDto registerReqDto) {
         return Customer.builder()
                 .firstName(registerReqDto.getFirstName())
                 .lastName(registerReqDto.getLastName())
@@ -25,7 +25,7 @@ public class CustomerMapper implements Mapper<Customer, RegisterReqDto> {
     }
 
     @Override
-    public RegisterReqDto toRegisterDto(Customer customer) {
+    public RegisterReqDto toDto(Customer customer) {
         return RegisterReqDto.builder()
                 .firstName(customer.getFirstName())
                 .lastName(customer.getLastName())
@@ -35,12 +35,12 @@ public class CustomerMapper implements Mapper<Customer, RegisterReqDto> {
     }
 
     @Override
-    public List<Customer> toCustomerList(List<RegisterReqDto> registerReqDtos) {
+    public List<Customer> toBeanList(List<RegisterReqDto> registerReqDtos) {
         return null;
     }
 
     @Override
-    public List<RegisterReqDto> toRegisterDtoList(List<Customer> customers) {
+    public List<RegisterReqDto> toDtoList(List<Customer> customers) {
         return null;
     }
 }

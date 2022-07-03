@@ -2,34 +2,18 @@ package com.jb.CouponSystem.services;
 
 import com.jb.CouponSystem.Beans.Company;
 import com.jb.CouponSystem.Beans.Customer;
-import com.jb.CouponSystem.LoginManager.ClientType;
 import com.jb.CouponSystem.exceptions.CouponSystemException;
 import com.jb.CouponSystem.exceptions.ErrMsg;
 import com.jb.CouponSystem.exceptions.ExceptionUtil;
-import com.jb.CouponSystem.security.Information;
-import com.jb.CouponSystem.security.TokenManager;
+import lombok.Data;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.UUID;
 
 @Service
+@Data
 public class AdminServiceImp extends ClientService implements AdminService {
-
-    private final String email = "admin@admin.com";
-    private final String password = "admin";
-    private TokenManager tokenManager;
-
-    @Override
-    public UUID login(String email, String password) throws CouponSystemException {
-        if (email != this.email || password != this.password) {
-            throw new CouponSystemException(ErrMsg.FALSE_EMAIL_OR_PASSWORD);
-        }
-        Information information = new Information(0, "admin@admin.com", ClientType.ADMINISTRATOR);
-        return tokenManager.addToken(information);
-
-
-    }
 
     @Override
     public void addCompany(Company company) throws CouponSystemException {
@@ -40,9 +24,12 @@ public class AdminServiceImp extends ClientService implements AdminService {
     }
 
     @Override
-    public void updateCompany(Company company) throws CouponSystemException {
-        companyRepository.findByIdAndName(company.getId(), company.getName()).orElseThrow(() -> new CouponSystemException(ErrMsg.ID_NOT_EXISTS));
-        companyRepository.save(company);
+    public void updateCompany(int companyId, Company company) throws CouponSystemException {
+//        if(!tokenManager.isAdmin(token)){
+//            throw new CouponSystemException(ErrMsg.UNAUTHORIZED);}
+        companyRepository.findById(companyId).orElseThrow(() -> new CouponSystemException(ErrMsg.ID_NOT_EXISTS));
+        company.setId(companyId);
+        companyRepository.saveAndFlush(company);
     }
 
     @Override
@@ -73,9 +60,13 @@ public class AdminServiceImp extends ClientService implements AdminService {
     }
 
     @Override
-    public void updateCustomer(Customer customer) throws CouponSystemException {
-        this.customerRepository.findById(customer.getId()).orElseThrow(() -> new CouponSystemException(ErrMsg.ID_NOT_EXISTS));
-        this.customerRepository.save(customer);
+    public void updateCustomer(int customerId, Customer customer, UUID token) throws CouponSystemException {
+        if (!tokenManager.isAdmin(token)) {
+            throw new CouponSystemException(ErrMsg.UNAUTHORIZED);
+        }
+        customerRepository.findById(customerId).orElseThrow(() -> new CouponSystemException(ErrMsg.ID_NOT_EXISTS));
+        customer.setId(customerId);
+        customerRepository.save(customer);
     }
 
     @Override
@@ -90,7 +81,11 @@ public class AdminServiceImp extends ClientService implements AdminService {
     }
 
     @Override
-    public Customer getOneCustomer(int customerID) throws CouponSystemException {
+    public Customer getOneCustomer(int customerID, UUID uuid) throws CouponSystemException {
+        if (!tokenManager.isAdmin(uuid)) {
+            throw new CouponSystemException(ErrMsg.UNAUTHORIZED);
+
+        }
         return this.customerRepository.findById(customerID).orElseThrow(ExceptionUtil::IdNotFound);
     }
 

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -25,10 +26,10 @@ public class Company {
     @Column(unique = true, length = 40)
     private String email;
 
-    @OneToMany
     @ToString.Exclude
     @Singular
-    private List<Coupon> coupons;
+    @OneToMany(mappedBy = "company", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Coupon> coupons = new ArrayList<>();
 
 
 }

@@ -60,4 +60,15 @@ public class TokenManager {
 
         return true;
     }
+
+    public int getIdByToken(UUID uuid) {
+        return tokens.get(uuid).getId();
+
+    }
+
+
+    public void deleteByToken(UUID uuid) {
+
+        tokens.remove(uuid);
+    }
 }

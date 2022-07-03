@@ -3,15 +3,12 @@ package com.jb.CouponSystem.controllers;
 import com.jb.CouponSystem.Beans.Category;
 import com.jb.CouponSystem.Beans.Coupon;
 import com.jb.CouponSystem.Beans.Customer;
-import com.jb.CouponSystem.LoginManager.ClientType;
-import com.jb.CouponSystem.dto.LoginReqDto;
-import com.jb.CouponSystem.dto.LoginResDto;
-import com.jb.CouponSystem.dto.RegisterReqDto;
+import com.jb.CouponSystem.dto.CouponDto;
 import com.jb.CouponSystem.exceptions.CouponSystemException;
+import com.jb.CouponSystem.mapper.CouponMapper;
 import com.jb.CouponSystem.security.TokenManager;
 import com.jb.CouponSystem.services.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,45 +22,33 @@ public class CustomerController {
     private CustomerService customerService;
     @Autowired
     private TokenManager tokenManager;
+    @Autowired
+    private CouponMapper couponMapper;
 
-    @PostMapping("login")
-    @ResponseStatus(HttpStatus.CREATED)
-    public LoginResDto login(@RequestBody LoginReqDto loginReqDto) throws CouponSystemException {
-        UUID uuid = customerService.login(loginReqDto.getEmail(), loginReqDto.getPassword());
-        ClientType clientType = tokenManager.getClientType(uuid);
-        return new LoginResDto(loginReqDto.getEmail(), uuid, clientType);
 
+    @PostMapping("purchase/{customerId}")
+    void purchaseCoupon(@RequestHeader("Authorization") UUID uuid, @PathVariable int customerId, @RequestBody CouponDto couponDto) throws CouponSystemException {
+        customerService.purchaseCoupon(customerId, couponDto, uuid);
     }
 
-    @PostMapping("register")
-    @ResponseStatus(HttpStatus.CREATED)
-    public void register(@RequestBody RegisterReqDto registerReqDto) throws CouponSystemException {
-        customerService.register(registerReqDto);
-    }
-
-    @PutMapping("/{customerId}")
-    void purchaseCoupon(@PathVariable int customerId, @RequestBody Coupon coupon) throws CouponSystemException {
-        customerService.purchaseCoupon(customerId, coupon);
-    }
-
-    @GetMapping("/{customerId}")
+    @GetMapping("coupons/{customerId}")
     List<Coupon> getCustomerCoupons(@PathVariable int customerId) {
         return customerService.getCustomerCoupons(customerId);
     }
 
-    @GetMapping("/{customerId}/{Category}")
+    @GetMapping("coupons/{customerId}/{Category}")
     List<Coupon> getCustomerCoupons(@PathVariable int customerId, @PathVariable Category category) {
         return customerService.getCustomerCoupons(customerId, category);
     }
 
-    @GetMapping("/{customerId}/{maxPrice}")
+    @GetMapping("coupons/{customerId}/{maxPrice}")
     List<Coupon> getCustomerCoupons(@PathVariable int customerId, @RequestParam double maxPrice) {
         return customerService.getCustomerCoupons(customerId, maxPrice);
     }
 
     @GetMapping("customer/{customerId}")
-    Customer getCustomerDetails(@PathVariable int customerId) throws CouponSystemException {
-        return customerService.getCustomerDetails(customerId);
+    Customer getCustomerDetails(@PathVariable int customerId, @RequestHeader("Authorization") UUID uuid) throws CouponSystemException {
+        return customerService.getCustomerDetails(customerId, uuid);
     }
 
     @GetMapping("available/{customerId}")
@@ -71,4 +56,13 @@ public class CustomerController {
         return customerService.getAllAvailableCoupons(customerId);
     }
 
+    @GetMapping("coupons")
+    List<CouponDto> getAllCoupons() {
+        return couponMapper.toDtoList(customerService.getAllCoupons());
+    }
+
+    @GetMapping("oneCoupon/{id}")
+    Coupon getOneCoupon(@PathVariable int id) throws CouponSystemException {
+        return customerService.getOneCoupon(id);
+    }
 }
